@@ -1,15 +1,16 @@
 package sample;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -28,14 +29,30 @@ public class Main extends Application {
         primaryStage.setWidth(bounds.getWidth());
         primaryStage.setHeight(bounds.getHeight());
         primaryStage.setTitle("Adrian no es hombre");
+        BorderPane fondo = new BorderPane();
+        fondo.setPrefWidth(bounds.getWidth());
+        fondo.setPrefHeight(bounds.getHeight());
         SplitPane mainWindow = new SplitPane();
         mainWindow.setDividerPosition(0,0.7);
+        //menu de opciones
+        MenuBar barraOpciones = new MenuBar();
+            //menu de abrir archivo
+            Menu menuArchivo = new Menu("Archivo");
+                //opciones
+                MenuItem abrirArchivo = new MenuItem("Abrir Archivo");
+            menuArchivo.getItems().addAll(abrirArchivo);
+        barraOpciones.getMenus().addAll(menuArchivo);
         //lado del mapa
         ScrollPane panelIzq = new ScrollPane();
         panelIzq.setPrefViewportHeight(bounds.getHeight());
         panelIzq.setPrefViewportWidth(bounds.getWidth()*0.7);
         Pane contenedorMapa = new Pane();
         contenedorMapa.setPrefSize(bounds.getWidth()*0.7,bounds.getHeight());
+        //canvas de adrian
+        final Canvas mapa = new Canvas(bounds.getWidth()*0.7,bounds.getHeight());
+        GraphicsContext gc = mapa.getGraphicsContext2D();
+        mapa.setId("canvasMapa");//para buscarlo en otros lados usas scene.lookup("#canvasMapa");.
+        contenedorMapa.getChildren().addAll(mapa);
         panelIzq.setContent(contenedorMapa);
         //lado derecho
         SplitPane panelDer = new SplitPane();
@@ -71,7 +88,9 @@ public class Main extends Application {
 
         panelDer.getItems().addAll(panelDerSup,panelDerInf);
         mainWindow.getItems().addAll(panelIzq,panelDer);
-        primaryStage.setScene(new Scene(mainWindow, bounds.getWidth(), bounds.getHeight()));
+        fondo.setTop(barraOpciones);
+        fondo.setCenter(mainWindow);
+        primaryStage.setScene(new Scene(fondo, bounds.getWidth(), bounds.getHeight()));
         primaryStage.setMaximized(true);
         primaryStage.show();
     }
