@@ -63,9 +63,10 @@ public class Main extends Application {
         //canvas de adrian
         final Canvas mapaCanvas = new Canvas(bounds.getWidth()*0.7,bounds.getHeight());
         mapaCanvas.setId("canvasMapa");//para buscarlo en otros lados usas scene.lookup("#canvasMapa");.
-        mapaTerreno = new Mapa(mapaCanvas.getGraphicsContext2D());
         contenedorMapa.getChildren().addAll(mapaCanvas);
         panelIzq.setContent(contenedorMapa);
+        //Creacion del Mapa
+        mapaTerreno = new Mapa(mapaCanvas.getGraphicsContext2D());
 
         //lado derecho
         SplitPane panelDer = new SplitPane();
@@ -130,7 +131,14 @@ public class Main extends Application {
                 );
                 File selectedFile = fileChooser.showOpenDialog(stage);
                 if (selectedFile != null) {
-                    mapaTerreno.leerArchivo(selectedFile.getPath());
+                    if(mapaTerreno.leerArchivo(selectedFile.getPath())){
+
+                    } else {
+                        Alert a = new Alert(Alert.AlertType.ERROR);
+                        a.setContentText("Error al leer el archivo");
+                        a.show();
+                    }
+
                 }
             }
         });

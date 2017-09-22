@@ -33,6 +33,7 @@ public class Mapa {
                 //Si no coinciden las columnas
                 if(!leerFila(scanner.nextLine(), fila)){
                     //Termina de buscar, no funcionan las columnas, no hay necesidad de buscar mas
+                    System.out.println("Error");
                     return false;
                 }
                 matriz.add(fila);
