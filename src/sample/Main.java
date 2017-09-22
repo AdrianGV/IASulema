@@ -20,11 +20,17 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import java.io.File;
 import javafx.stage.Window;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Scanner;
 
 public class Main extends Application {
+
+    Mapa mapaTerreno;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -55,10 +61,10 @@ public class Main extends Application {
         contenedorMapa.setPrefSize(bounds.getWidth()*0.7,bounds.getHeight());
 
         //canvas de adrian
-        final Canvas mapa = new Canvas(bounds.getWidth()*0.7,bounds.getHeight());
-        GraphicsContext gc = mapa.getGraphicsContext2D();
-        mapa.setId("canvasMapa");//para buscarlo en otros lados usas scene.lookup("#canvasMapa");.
-        contenedorMapa.getChildren().addAll(mapa);
+        final Canvas mapaCanvas = new Canvas(bounds.getWidth()*0.7,bounds.getHeight());
+        mapaCanvas.setId("canvasMapa");//para buscarlo en otros lados usas scene.lookup("#canvasMapa");.
+        mapaTerreno = new Mapa(mapaCanvas.getGraphicsContext2D());
+        contenedorMapa.getChildren().addAll(mapaCanvas);
         panelIzq.setContent(contenedorMapa);
 
         //lado derecho
@@ -113,7 +119,7 @@ public class Main extends Application {
         //menu de abrir archivo
         Menu menuArchivo = new Menu("Archivo");
         //opciones
-        MenuItem abrirArchivo = new MenuItem("Abrir Archivo");
+        MenuItem abrirArchivo = new MenuItem("Abrir");
         abrirArchivo.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -124,8 +130,7 @@ public class Main extends Application {
                 );
                 File selectedFile = fileChooser.showOpenDialog(stage);
                 if (selectedFile != null) {
-                    System.out.println("EncontroArchivo");
-                    //.display(selectedFile);
+                    mapaTerreno.leerArchivo(selectedFile.getPath());
                 }
             }
         });
