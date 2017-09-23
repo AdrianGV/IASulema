@@ -2,6 +2,8 @@ package sample;
 
 import com.sun.org.apache.bcel.internal.generic.NEW;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
@@ -10,17 +12,24 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+import java.io.File;
 
+public class Main extends Application {
+    Manejador_Archivo manejador_archivo = new Manejador_Archivo();
+    String []numTerrenos = null;
+    InfoSeresManager infoSeres = null;
     @Override
     public void start(Stage primaryStage) throws Exception{
+
         //tamaño de la pantalla
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
@@ -35,13 +44,7 @@ public class Main extends Application {
         SplitPane mainWindow = new SplitPane();
         mainWindow.setDividerPosition(0,0.7);
         //menu de opciones
-        MenuBar barraOpciones = new MenuBar();
-            //menu de abrir archivo
-            Menu menuArchivo = new Menu("Archivo");
-                //opciones
-                MenuItem abrirArchivo = new MenuItem("Abrir Archivo");
-            menuArchivo.getItems().addAll(abrirArchivo);
-        barraOpciones.getMenus().addAll(menuArchivo);
+        MenuBar barraOpciones = inicializarBarraMenu(primaryStage);
         //lado del mapa
         ScrollPane panelIzq = new ScrollPane();
         panelIzq.setPrefViewportHeight(bounds.getHeight());
@@ -76,14 +79,7 @@ public class Main extends Application {
         ScrollPane panelDerInf = new ScrollPane();
         panelDerInf.setPrefViewportHeight(bounds.getHeight()/2);
         panelDerInf.setPrefViewportWidth(bounds.getWidth()*0.3);
-        TabPane infoSeres = new TabPane();
-        Tab ser1 = new Tab();
-        ser1.setText("ser 1");
-        ser1.setContent(new Rectangle(bounds.getWidth()*0.3,bounds.getHeight()/2, Color.LIGHTSTEELBLUE));
-        Tab ser2 = new Tab();
-        ser2.setText("ser 2");
-        ser2.setContent(new Rectangle(bounds.getWidth()*0.3,bounds.getHeight()/2, Color.LIGHTSTEELBLUE));
-        infoSeres.getTabs().addAll(ser1, ser2);
+        infoSeres = new InfoSeresManager(numTerrenos, bounds);
         panelDerInf.setContent(infoSeres);
 
         panelDer.getItems().addAll(panelDerSup,panelDerInf);
@@ -94,7 +90,33 @@ public class Main extends Application {
         primaryStage.setMaximized(true);
         primaryStage.show();
     }
+    private MenuBar inicializarBarraMenu(Stage stage){
+        MenuBar barraOpciones = new MenuBar();
 
+        //menu de abrir archivo
+        Menu menuArchivo = new Menu("Archivo");
+        //opciones
+        MenuItem abrirArchivo = new MenuItem("Abrir Archivo");
+        abrirArchivo.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Abrir Archivo Mapa");
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("Archivos de Texto", "*.txt")
+                );
+                File selectedFile = fileChooser.showOpenDialog(stage);
+                if (selectedFile != null) {
+                    //mapaTerreno.leerArchivo(selectedFile.getPath());
+                    numTerrenos = manejador_archivo.identificador(manejador_archivo.leer(selectedFile.toString()));
+                    infoSeres.updateIdTerrenos(numTerrenos);
+                }
+            }
+        });
+        menuArchivo.getItems().addAll(abrirArchivo);
+        barraOpciones.getMenus().addAll(menuArchivo);
+        return barraOpciones;
+    }
 
     public static void main(String[] args) {
         launch(args);
