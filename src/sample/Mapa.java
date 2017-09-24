@@ -15,12 +15,15 @@ public class Mapa {
     private int numFilas, numColumnas;
     //Por convencion [Filas] [Columnas]
     private int[][] matrizmapa;
+    //
+    ArrayList<Integer> conjuntoTerrenos;
 
     public Mapa(GraphicsContext gc){
 
         this.gc = gc;
         this.numFilas = 0;
         this.numColumnas = 0;
+        conjuntoTerrenos = new ArrayList<Integer>();
     }
 
     public boolean leerArchivo(String fileName){
@@ -50,10 +53,14 @@ public class Mapa {
     private boolean leerFila(String line, ArrayList<Integer> fila){
         Scanner scanner = new Scanner(line).useDelimiter("\\s*,\\s*");
         int contColumnas = 0;
+        int aux;
         boolean correcto = true;
         while (scanner.hasNextInt()){
-            //System.out.print(scanner.nextInt() + " ");
-            fila.add(scanner.nextInt());
+            aux = scanner.nextInt();
+            fila.add(aux);
+            if(!conjuntoTerrenos.contains(aux)){
+                conjuntoTerrenos.add(aux);
+            }
             contColumnas++;
         }
         if(numColumnas!=0){

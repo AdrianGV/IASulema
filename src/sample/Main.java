@@ -1,17 +1,12 @@
 package sample;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
-import com.sun.org.apache.xml.internal.serializer.utils.SystemIDResolver;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -20,21 +15,18 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import java.io.File;
-import javafx.stage.Window;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Scanner;
 
 public class Main extends Application {
 
+    public static Stage primaryStage;
     Mapa mapaTerreno;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         //tamaño de la pantalla
+        this.primaryStage = primaryStage;
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
         primaryStage.setX(bounds.getMinX());
@@ -120,7 +112,7 @@ public class Main extends Application {
         //menu de abrir archivo
         Menu menuArchivo = new Menu("Archivo");
         //opciones
-        MenuItem abrirArchivo = new MenuItem("Abrir");
+        MenuItem abrirArchivo = new MenuItem("Abrir...");
         abrirArchivo.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -132,7 +124,8 @@ public class Main extends Application {
                 File selectedFile = fileChooser.showOpenDialog(stage);
                 if (selectedFile != null) {
                     if(mapaTerreno.leerArchivo(selectedFile.getPath())){
-
+                        VentanaMapa vm = new VentanaMapa();
+                        vm.abrirVentana(mapaTerreno);
                     } else {
                         Alert a = new Alert(Alert.AlertType.ERROR);
                         a.setContentText("Error al leer el archivo");
