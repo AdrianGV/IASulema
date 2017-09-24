@@ -15,7 +15,7 @@ public class TerrenoFijo extends Terreno{
     }
 
     @Override
-    public void dibujarTerreno(GraphicsContext gc, int posX, int posY, int lado) {
+    public void dibujarTerreno(GraphicsContext gc, double posX, double posY, double lado) {
         gc.drawImage(this.imagen, 0,0, 128, 128, posX, posY, lado, lado);
     }
 }
