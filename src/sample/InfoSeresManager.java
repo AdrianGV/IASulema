@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public class InfoSeresManager extends TabPane{
     private String []idTerrenos;
+    private String []Terrenos;
     public InfoSeresManager(String []idTerr, Rectangle2D bounds){
         idTerrenos = idTerr;
         Tab ser = new Tab("Nuevo Ser");
@@ -37,9 +38,11 @@ public class InfoSeresManager extends TabPane{
         ser.setContent(cont);
         this.getTabs().addAll(ser);
     }
-    void updateIdTerrenos(String []idT){
+    void updateIdTerrenos(String []idT, String[] Terreno) {
         idTerrenos = idT;
+        Terrenos = Terreno;
     }
+
     String dialogPedirNombre(){
         final String[] nom = {null};
         TextInputDialog dialog = new TextInputDialog("Nombre del Ser");
@@ -50,19 +53,31 @@ public class InfoSeresManager extends TabPane{
         result.ifPresent(name -> nom[0] = name);
         return nom[0];
     }
+
     void crearTabSer(String name, Rectangle2D bounds){
         Tab ser = new Tab(name);
         ser.setContent(crearListadoTerrenos(bounds));
         this.getTabs().addAll(ser);
     }
+
     VBox crearListadoTerrenos(Rectangle2D bounds){
         VBox listado = new VBox();
         listado.setPrefSize(bounds.getWidth()*0.3,bounds.getHeight()/2);
+        Label id = new Label("Id"+"\t");
+        Label Ter = new Label("Terreno"+"\t");
+        Label Peso = new Label("Peso"+"\t");
+        HBox titulo = new HBox();
+        HBox ti = new HBox();
+        titulo.getChildren().addAll(id,Ter,Peso);
+        listado.getChildren().addAll(titulo);
         for(int i = 0; i < idTerrenos.length; i++){
             HBox fila = new HBox();
-            Label idT = new Label(idTerrenos[i].toString());
-            Spinner costo = new Spinner();
-            fila.getChildren().addAll(idT,costo);
+
+            Label idT = new Label(idTerrenos[i].toString()+"\t");
+            Label Te = new Label(Terrenos[i].toString()+" \t");
+            Spinner costo = new Spinner(-1,1000,0);
+
+            fila.getChildren().addAll(idT,Te,costo);
             listado.getChildren().addAll(fila);
         }
         return listado;
