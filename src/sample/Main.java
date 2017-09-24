@@ -1,16 +1,16 @@
 package sample;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+<<<<<<< HEAD
+=======
 import javafx.fxml.FXMLLoader;
+>>>>>>> refs/remotes/origin/Interfaz
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -22,41 +22,61 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.File;
+<<<<<<< HEAD
+
+public class Main extends Application {
+
+    public static Stage primaryStage;
+    Mapa mapaTerreno;
+
+=======
 
 public class Main extends Application {
     Manejador_Archivo manejador_archivo = new Manejador_Archivo();
     String []numTerrenos = null;
     InfoSeresManager infoSeres = null;
+>>>>>>> refs/remotes/origin/Interfaz
     @Override
     public void start(Stage primaryStage) throws Exception{
 
         //tamaño de la pantalla
+        this.primaryStage = primaryStage;
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
         primaryStage.setX(bounds.getMinX());
         primaryStage.setY(bounds.getMinY());
         primaryStage.setWidth(bounds.getWidth());
         primaryStage.setHeight(bounds.getHeight());
-        primaryStage.setTitle("Adrian no es hombre");
+        primaryStage.setTitle("Inteligencia Artificial");
+
         BorderPane fondo = new BorderPane();
         fondo.setPrefWidth(bounds.getWidth());
         fondo.setPrefHeight(bounds.getHeight());
+
+
         SplitPane mainWindow = new SplitPane();
         mainWindow.setDividerPosition(0,0.7);
         //menu de opciones
         MenuBar barraOpciones = inicializarBarraMenu(primaryStage);
+<<<<<<< HEAD
+
+=======
+>>>>>>> refs/remotes/origin/Interfaz
         //lado del mapa
         ScrollPane panelIzq = new ScrollPane();
         panelIzq.setPrefViewportHeight(bounds.getHeight());
         panelIzq.setPrefViewportWidth(bounds.getWidth()*0.7);
         Pane contenedorMapa = new Pane();
         contenedorMapa.setPrefSize(bounds.getWidth()*0.7,bounds.getHeight());
+
         //canvas de adrian
-        final Canvas mapa = new Canvas(bounds.getWidth()*0.7,bounds.getHeight());
-        GraphicsContext gc = mapa.getGraphicsContext2D();
-        mapa.setId("canvasMapa");//para buscarlo en otros lados usas scene.lookup("#canvasMapa");.
-        contenedorMapa.getChildren().addAll(mapa);
+        final Canvas mapaCanvas = new Canvas(bounds.getWidth()*0.7,bounds.getHeight());
+        mapaCanvas.setId("canvasMapa");//para buscarlo en otros lados usas scene.lookup("#canvasMapa");.
+        contenedorMapa.getChildren().addAll(mapaCanvas);
         panelIzq.setContent(contenedorMapa);
+        //Creacion del Mapa
+        mapaTerreno = new Mapa(mapaCanvas.getGraphicsContext2D());
+
         //lado derecho
         SplitPane panelDer = new SplitPane();
         panelDer.setPrefHeight(bounds.getHeight());
@@ -120,5 +140,39 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private MenuBar inicializarBarraMenu(Stage stage){
+        MenuBar barraOpciones = new MenuBar();
+
+        //menu de abrir archivo
+        Menu menuArchivo = new Menu("Archivo");
+        //opciones
+        MenuItem abrirArchivo = new MenuItem("Abrir...");
+        abrirArchivo.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Abrir Archivo Mapa");
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("Archivos de Texto", "*.txt")
+                );
+                File selectedFile = fileChooser.showOpenDialog(stage);
+                if (selectedFile != null) {
+                    if(mapaTerreno.leerArchivo(selectedFile.getPath())){
+                        VentanaMapa vm = new VentanaMapa();
+                        vm.abrirVentana(mapaTerreno);
+                    } else {
+                        Alert a = new Alert(Alert.AlertType.ERROR);
+                        a.setContentText("Error al leer el archivo");
+                        a.show();
+                    }
+
+                }
+            }
+        });
+        menuArchivo.getItems().addAll(abrirArchivo);
+        barraOpciones.getMenus().addAll(menuArchivo);
+        return barraOpciones;
     }
 }
