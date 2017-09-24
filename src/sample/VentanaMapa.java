@@ -31,10 +31,6 @@ import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.scene.image.*;
-import javafx.util.Pair;
 
 public class VentanaMapa {
 
@@ -44,9 +40,11 @@ public class VentanaMapa {
     int numImagenes;
     private Scene escena;
     public static Stage stage;
+    boolean leidoCorrecto;
 
     public VentanaMapa(){
         imagenesDisponibles = llenarPosiblesImagenes();
+        leidoCorrecto = false;
     }
 
     private ArrayList<Par<Image, Boolean>> llenarPosiblesImagenes(){
@@ -73,13 +71,47 @@ public class VentanaMapa {
         stage.setTitle("Configuracion Mapa");
         HBox layoutPrincipal = new HBox();
         //Aqui ira cada terreno para elegir su imagen
-        ScrollPane listaTerrenos = new ScrollPane();
+        ScrollPane lTerrenos = new ScrollPane();
         Button continuarButton = new Button("Continuar");
-        crearContenedoresTierras(listaTerrenos, mapaActual);
-        layoutPrincipal.getChildren().addAll(listaTerrenos, continuarButton);
+        continuarButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(terrenosSeteados()){
+                    leidoCorrecto = true;
+                    mapaActual.setListaTerrenos(listaTerrenos);
+                    stage.close();
+                }
+            }
+        });
+        crearContenedoresTierras(lTerrenos, mapaActual);
+        layoutPrincipal.getChildren().addAll(lTerrenos, continuarButton);
         escena = new Scene(layoutPrincipal);
         stage.setScene(escena);
         stage.showAndWait();
+    }
+
+    private boolean terrenosSeteados(){
+        int i;
+        boolean correcto = true;
+        for (i=0; i<listaTerrenos.length; i++){
+             correcto = listaTerrenos[i]!=null;
+             if(!correcto){
+                 break;
+             }
+             listaTerrenos[i].setNombre(regresaNombre(posiciones.get(i)));
+             listaTerrenos[i].setNumero(posiciones.get(i));
+        }
+        return correcto;
+    }
+
+    private String regresaNombre(int posicion){
+        TextField tf = (TextField)escena.lookup("#"+Integer.toString(posicion)+"Nombre");
+        String nombre = tf.getText();
+        if(tf.getText().isEmpty()){
+            nombre = Integer.toString(posicion);
+        }
+        System.out.println(nombre);
+        return nombre;
     }
 
     private void crearContenedoresTierras(ScrollPane listaTerrenos, Mapa mapaActual){

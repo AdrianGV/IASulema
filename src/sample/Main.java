@@ -65,7 +65,7 @@ public class Main extends Application {
         contenedorMapa.getChildren().addAll(mapaCanvas);
         panelIzq.setContent(contenedorMapa);
         //Creacion del Mapa
-        mapaTerreno = new Mapa(mapaCanvas.getGraphicsContext2D());
+        mapaTerreno = new Mapa(mapaCanvas.getGraphicsContext2D(), mapaCanvas.getHeight(), mapaCanvas.getWidth());
 
         //lado derecho
         SplitPane panelDer = new SplitPane();
@@ -101,36 +101,6 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    /*
-    private MenuBar inicializarBarraMenu(Stage stage){
-        MenuBar barraOpciones = new MenuBar();
-
-        //menu de abrir archivo
-        Menu menuArchivo = new Menu("Archivo");
-        //opciones
-        MenuItem abrirArchivo = new MenuItem("Abrir Archivo");
-        abrirArchivo.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Abrir Archivo Mapa");
-                fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("Archivos de Texto", "*.txt")
-                );
-                File selectedFile = fileChooser.showOpenDialog(stage);
-                if (selectedFile != null) {
-                    //mapaTerreno.leerArchivo(selectedFile.getPath());
-                    numTerrenos = manejador_archivo.identificador(manejador_archivo.leer(selectedFile.toString()));
-                    infoSeres.updateIdTerrenos(numTerrenos);
-                }
-            }
-        });
-        menuArchivo.getItems().addAll(abrirArchivo);
-        barraOpciones.getMenus().addAll(menuArchivo);
-        return barraOpciones;
-    }
-    */
-
     public static void main(String[] args) {
         launch(args);
     }
@@ -155,6 +125,9 @@ public class Main extends Application {
                     if(mapaTerreno.leerArchivo(selectedFile.getPath())){
                         VentanaMapa vm = new VentanaMapa();
                         vm.abrirVentana(mapaTerreno);
+                        if(vm.leidoCorrecto){
+                            mapaTerreno.dibujarMapa();
+                        }
                     } else {
                         Alert a = new Alert(Alert.AlertType.ERROR);
                         a.setContentText("Error al leer el archivo");
