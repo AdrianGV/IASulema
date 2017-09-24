@@ -3,10 +3,7 @@ package sample;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-<<<<<<< HEAD
-=======
 import javafx.fxml.FXMLLoader;
->>>>>>> refs/remotes/origin/Interfaz
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -22,20 +19,16 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.File;
-<<<<<<< HEAD
 
 public class Main extends Application {
 
     public static Stage primaryStage;
     Mapa mapaTerreno;
 
-=======
-
-public class Main extends Application {
     Manejador_Archivo manejador_archivo = new Manejador_Archivo();
     String []numTerrenos = null;
     InfoSeresManager infoSeres = null;
->>>>>>> refs/remotes/origin/Interfaz
+
     @Override
     public void start(Stage primaryStage) throws Exception{
 
@@ -58,10 +51,7 @@ public class Main extends Application {
         mainWindow.setDividerPosition(0,0.7);
         //menu de opciones
         MenuBar barraOpciones = inicializarBarraMenu(primaryStage);
-<<<<<<< HEAD
 
-=======
->>>>>>> refs/remotes/origin/Interfaz
         //lado del mapa
         ScrollPane panelIzq = new ScrollPane();
         panelIzq.setPrefViewportHeight(bounds.getHeight());
@@ -110,6 +100,8 @@ public class Main extends Application {
         primaryStage.setMaximized(true);
         primaryStage.show();
     }
+
+    /*
     private MenuBar inicializarBarraMenu(Stage stage){
         MenuBar barraOpciones = new MenuBar();
 
@@ -137,6 +129,7 @@ public class Main extends Application {
         barraOpciones.getMenus().addAll(menuArchivo);
         return barraOpciones;
     }
+    */
 
     public static void main(String[] args) {
         launch(args);
