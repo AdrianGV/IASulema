@@ -12,7 +12,7 @@ public class TerrenoUsuario extends Terreno{
     }
 
     @Override
-    public void dibujarTerreno(GraphicsContext gc, int posX, int posY, int lado) {
+    public void dibujarTerreno(GraphicsContext gc, double posX, double posY, double lado) {
         gc.setFill(rgb);
         gc.fillRect(posX, posY, lado, lado);
     }
