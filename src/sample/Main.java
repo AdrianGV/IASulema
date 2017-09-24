@@ -14,7 +14,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -25,8 +24,6 @@ import javafx.stage.Stage;
 import java.io.File;
 
 public class Main extends Application {
-    String[][] Matriz;
-    GridPane layout = new GridPane();
     Manejador_Archivo manejador_archivo = new Manejador_Archivo();
     String []numTerrenos = null;
     InfoSeresManager infoSeres = null;
@@ -69,15 +66,14 @@ public class Main extends Application {
         ScrollPane panelDerSup = new ScrollPane();
         panelDerSup.setPrefViewportHeight(bounds.getHeight()/2);
         panelDerSup.setPrefViewportWidth(bounds.getWidth()*0.3);
-        //info del mapa
         TabPane infoMapa = new TabPane();
-        Tab infoTerreno = new Tab();
-        infoTerreno.setText("Información del Terreno");
-        infoTerreno.setContent(new Rectangle(bounds.getWidth()*0.3,bounds.getHeight()/2, Color.LIGHTSTEELBLUE));
-        /*Tab infoArbol = new Tab();
-        infoArbol.setText("Árbol de Búsqueda");
-        infoArbol.setContent(new Rectangle(bounds.getWidth()*0.3,bounds.getHeight()/2, Color.LIGHTSTEELBLUE));*/
-        infoMapa.getTabs().addAll(infoTerreno);//falta agregar info del arbol
+        Tab info1 = new Tab();
+        info1.setText("info 1");
+        info1.setContent(new Rectangle(bounds.getWidth()*0.3,bounds.getHeight()/2, Color.LIGHTSTEELBLUE));
+        Tab info2 = new Tab();
+        info2.setText("info 2");
+        info2.setContent(new Rectangle(bounds.getWidth()*0.3,bounds.getHeight()/2, Color.LIGHTSTEELBLUE));
+        infoMapa.getTabs().addAll(info1, info2);
         panelDerSup.setContent(infoMapa);
 
         ScrollPane panelDerInf = new ScrollPane();
@@ -112,51 +108,8 @@ public class Main extends Application {
                 File selectedFile = fileChooser.showOpenDialog(stage);
                 if (selectedFile != null) {
                     //mapaTerreno.leerArchivo(selectedFile.getPath());
-                    manejador_archivo.checararchivo(selectedFile.toString());
                     numTerrenos = manejador_archivo.identificador(manejador_archivo.leer(selectedFile.toString()));
-                    String todo =manejador_archivo.leer(selectedFile.toString());
-                    String[]tod=todo.split(",");
-                    String []Terrenos =Escojer_Terrenos.mostrar(numTerrenos);
-                    infoSeres.updateIdTerrenos(numTerrenos,Terrenos);
-                    Matriz= new String[manejador_archivo.getfilas()][manejador_archivo.getcolumnas()];
-
-                    layout.setHgap(manejador_archivo.getfilas());
-                    layout.setVgap(manejador_archivo.getcolumnas());
-
-
-                    for (int i=0;i<manejador_archivo.getcolumnas(); i++){
-                        Label map =new Label();
-                        map.setText(""+i);
-                        map.setMinSize(30,30);
-                        map.setStyle("-fx-border-color: black; -fx-background-color: grey;");
-                        layout.add(map,0,i);
-                    }
-
-                    for (int i=0;i<=manejador_archivo.getfilas(); i++){
-                        Label map =new Label();
-                        map.setText(Character.toString ((char) (i+65)));
-
-                        map.setMinSize(30,30);
-                        map.setStyle("-fx-border-color: black; -fx-background-color: grey;");
-                        layout.add(map,i+1,0);
-                    }
-
-                    int k=0;
-                    for (int i=0; i<manejador_archivo.getfilas();i++){
-                        for (int j=0; j<manejador_archivo.getcolumnas(); j++){
-                            Label map =new Label();
-                            map.setText(tod[k]);
-                            map.setMinSize(30,30);
-                            map.setStyle("-fx-border-color: black;");
-                            layout.add(map,j+1,i+1);
-                            Matriz[i][j]=tod[k];
-                            k++;
-                        }
-                    }
-
-
-
-
+                    infoSeres.updateIdTerrenos(numTerrenos);
                 }
             }
         });
