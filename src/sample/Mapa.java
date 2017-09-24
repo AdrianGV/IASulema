@@ -132,4 +132,16 @@ public class Mapa {
     public Terreno[] getListaTerrenos() {
         return listaTerrenos;
     }
+
+    public GraphicsContext getGc() {
+        return gc;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public double getWidth() {
+        return width;
+    }
 }
