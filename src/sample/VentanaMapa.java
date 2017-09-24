@@ -1,13 +1,23 @@
 package sample;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -17,121 +27,133 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.image.*;
+import javafx.util.Pair;
 
 public class VentanaMapa {
 
-    ArrayList<TerrenoFijo> posiblesTerrenos;
+    Terreno[] listaTerrenos;
+    ArrayList<Integer> posiciones;
+    ArrayList<Par<Image, Boolean>>  imagenesDisponibles;
+    int numImagenes;
+    private Scene escena;
+    public static Stage stage;
 
     public VentanaMapa(){
-        posiblesTerrenos = llenarPosiblesTerrenos();
-
+        imagenesDisponibles = llenarPosiblesImagenes();
     }
 
-    private ArrayList<TerrenoFijo> llenarPosiblesTerrenos(){
-        //Buscar donde estan las imagenes ../ para ir a la carpeta que contiene
-        ArrayList<TerrenoFijo> listaPosibles = new ArrayList<>();
+    private ArrayList<Par<Image, Boolean>> llenarPosiblesImagenes(){
+        ArrayList<Par<Image, Boolean>> posiblesImagenes = new ArrayList<>();
         File folder = new File(System.getProperty("user.dir")+"\\src\\resources\\terrenos");
-        System.out.println(folder);
         File[] listOfFiles = folder.listFiles();
-        if (listOfFiles!=null)
-        for (int i=0; i<listOfFiles.length; i++){
-            if (listOfFiles[i].isFile()) {
-                listaPosibles.add(new TerrenoFijo(new Image(listOfFiles[i].toURI().toString()), listOfFiles[i].getName().replace(".png", "")));
+        if (listOfFiles!=null){
+            for (int i=0; i<listOfFiles.length; i++){
+                if (listOfFiles[i].isFile()) {
+                    posiblesImagenes.add(new Par<>(new Image(listOfFiles[i].toURI().toString()),true));
+                }
             }
         }
-        return listaPosibles;
+        return posiblesImagenes;
     }
 
     public void abrirVentana(Mapa mapaActual){
-            Stage stage = new Stage();
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(Main.primaryStage);
-            stage.initStyle(StageStyle.DECORATED);
-            stage.setTitle("Configuracion Mapa");
-            HBox layoutPrincipal = new HBox();
-            //Aqui ira cada terreno para elegir su imagen
-            VBox listaTerrenos = new VBox();
-            Button continuarButton = new Button("Continuar");
-            crearContenedoresTierras(listaTerrenos, mapaActual);
-            layoutPrincipal.getChildren().addAll(listaTerrenos, continuarButton);
-            stage.setScene(new Scene(layoutPrincipal));
-            stage.show();
+        listaTerrenos = new Terreno[mapaActual.regresaNumDifTerrenos()];
+        posiciones = mapaActual.regresaTerrenos();
+        stage = new Stage();
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(Main.primaryStage);
+        stage.initStyle(StageStyle.DECORATED);
+        stage.setTitle("Configuracion Mapa");
+        HBox layoutPrincipal = new HBox();
+        //Aqui ira cada terreno para elegir su imagen
+        ScrollPane listaTerrenos = new ScrollPane();
+        Button continuarButton = new Button("Continuar");
+        crearContenedoresTierras(listaTerrenos, mapaActual);
+        layoutPrincipal.getChildren().addAll(listaTerrenos, continuarButton);
+        escena = new Scene(layoutPrincipal);
+        stage.setScene(escena);
+        stage.showAndWait();
     }
 
-    private void crearContenedoresTierras(Pane listaTerrenos, Mapa mapaActual){
-        ArrayList<Integer> numerosTerrenos = mapaActual.conjuntoTerrenos;
-        int i, tamanio = mapaActual.conjuntoTerrenos.size();
+    private void crearContenedoresTierras(ScrollPane listaTerrenos, Mapa mapaActual){
+        ArrayList<Integer> numerosTerrenos = mapaActual.regresaTerrenos();
+        VBox vertical = new VBox();
+        int i, tamanio = mapaActual.regresaNumDifTerrenos();
         for(i=0; i<tamanio; i++){
-            listaTerrenos.getChildren().add(crearContenedor(numerosTerrenos.get(i)));
+            vertical.getChildren().add(crearContenedor(numerosTerrenos.get(i)));
         }
+        listaTerrenos.setContent(vertical);
     }
 
     private Pane crearContenedor(int numeroMapa){
         HBox horizontal = new HBox();
-        Label etiquetaNumero = new Label(Integer.toString(numeroMapa));
+        Label etiquetaNumero = new Label("Numero en Mapa: "+Integer.toString(numeroMapa));
         TextField nombre = new TextField();
-        ComboBox<Image> eleccion = crearComboBox();
-        /*
-        ComboBox<Image> eleccion = new ComboBox<>();
-        Image aux = null;
-        int i;
-        int tamanio = posiblesTerrenos.size();
-        for (i=0; i<tamanio; i++){
-            if(posiblesTerrenos.get(i).getNombre()!="Otros"){
-                eleccion.getItems().add(posiblesTerrenos.get(i).getImagen());
-            }
-            else {
-                aux = posiblesTerrenos.get(i).getImagen();
-            }
-        }
-        eleccion.setValue(aux);
-        */
+        nombre.setId(Integer.toString(numeroMapa)+"Nombre");
+        Canvas muestraTerreno = new Canvas(128, 128);
+        muestraTerreno.setId(Integer.toString(numeroMapa)+"Canvas");
+        Button agregarNuevo = new Button("Agregar Nuevo Terreno");
+        Button seleccionarExistente = new Button("Seleccionar Terreno existente");
+        VBox vertical = new VBox();
+        //Texto que aparecera antes de que escriban algo
         nombre.setPromptText("Nombre de la Casilla");
-        horizontal.getChildren().addAll(etiquetaNumero, eleccion, nombre);
+        //Damos una accion a Agregar Nuevo, en este caso abrira una ventana para definir un color
+        agregarNuevo.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+
+            }
+        });
+        seleccionarExistente.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                VentanaTerrenoFijo vtf = new VentanaTerrenoFijo(imagenesDisponibles);
+                if(vtf.tieneImagenes){
+                    vtf.mostrarVentana();
+                    if(vtf.confrimado){
+                        Canvas cv = (Canvas)escena.lookup("#"+numeroMapa+"Canvas");
+                        GraphicsContext gc = cv.getGraphicsContext2D();
+                        gc.drawImage(vtf.imagenSeleccionada, 0, 0);
+                        //Si tenia una imagen ya que la libere
+                        if(null!=listaTerrenos[posiciones.indexOf(numeroMapa)]){
+                            for (Par<Image, Boolean> parImagen:
+                                    imagenesDisponibles) {
+                                if(parImagen.getKey()==((TerrenoFijo)listaTerrenos[posiciones.indexOf(numeroMapa)]).getImagen()){
+                                    parImagen.setValue(true);
+                                    break;
+                                }
+                            }
+                        }
+                        //Guardar la imagen en el nuevo terreno
+                        listaTerrenos[posiciones.indexOf(numeroMapa)] = new TerrenoFijo(vtf.imagenSeleccionada);
+                        //Apartar la imagen para el terreno
+                        for (Par<Image, Boolean> parImagen:
+                             imagenesDisponibles) {
+                            if(parImagen.getKey()==vtf.getImagenSeleccionada()){
+                                parImagen.setValue(false);
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    Alert errorNoHayMas = new Alert(Alert.AlertType.ERROR);
+                    errorNoHayMas.setTitle("No hay mas imagenes predefinidas");
+                    errorNoHayMas.setHeaderText("No hay mas imagenes predefinidas");
+                    errorNoHayMas.setContentText("Seleccione la otra opcion");
+                }
+            }
+        });
+        //Agregamos los elementos a un layout para que se vean
+        vertical.getChildren().addAll(etiquetaNumero, nombre, seleccionarExistente, agregarNuevo);
+        horizontal.getChildren().addAll(muestraTerreno, vertical);
         return horizontal;
     }
-
-    private ComboBox<Image> crearComboBox(){
-        ComboBox<Image> eleccion = new ComboBox<>();
-        int i;
-        int tamanio = posiblesTerrenos.size();
-        for (i=0; i<tamanio; i++){
-            if(posiblesTerrenos.get(i).getNombre()!="Otros"){
-                eleccion.getItems().add(posiblesTerrenos.get(i).getImagen());
-            }
-        }
-        eleccion.setButtonCell(new ImageListCell());
-        eleccion.setCellFactory(listView -> new ImageListCell());
-        eleccion.getSelectionModel().select(0);
-        return eleccion;
-    }
-
-    class ImageListCell extends ListCell<Image> {
-        private final ImageView view;
-
-        ImageListCell() {
-            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            view = new ImageView();
-        }
-
-        @Override protected void updateItem(Image item, boolean empty) {
-            super.updateItem(item, empty);
-
-            if (item == null || empty) {
-                setGraphic(null);
-            } else {
-                view.setImage(item);
-                setGraphic(view);
-            }
-        }
-
-    }
-
-
 }

@@ -16,7 +16,7 @@ public class Mapa {
     //Por convencion [Filas] [Columnas]
     private int[][] matrizmapa;
     //
-    ArrayList<Integer> conjuntoTerrenos;
+    private ArrayList<Integer> conjuntoTerrenos;
 
     public Mapa(GraphicsContext gc){
 
@@ -82,5 +82,13 @@ public class Mapa {
             }
         }
         return matriz;
+    }
+
+    public int regresaNumDifTerrenos(){
+        return conjuntoTerrenos.size();
+    }
+
+    public ArrayList<Integer> regresaTerrenos(){
+        return conjuntoTerrenos;
     }
 }

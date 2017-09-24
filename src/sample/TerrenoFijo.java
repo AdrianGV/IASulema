@@ -6,9 +6,8 @@ import javafx.scene.image.Image;
 public class TerrenoFijo extends Terreno{
     Image imagen;
 
-    public TerrenoFijo(Image imagen, String nombre){
+    public TerrenoFijo(Image imagen){
         this.imagen = imagen;
-        this.nombre = nombre;
     }
 
     public Image getImagen() {
