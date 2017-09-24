@@ -22,5 +22,5 @@ public abstract class Terreno {
         return numero;
     }
 
-    public abstract void dibujarTerreno(GraphicsContext gc, int posX, int posY, int lado);
+    public abstract void dibujarTerreno(GraphicsContext gc, double posX, double posY, double lado);
 }

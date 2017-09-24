@@ -12,18 +12,49 @@ import java.util.*;
 public class Mapa {
 
     private GraphicsContext gc;
+    private double height, width;
     private int numFilas, numColumnas;
+
     //Por convencion [Filas] [Columnas]
     private int[][] matrizmapa;
-    //
     private ArrayList<Integer> conjuntoTerrenos;
+    private Terreno[] listaTerrenos;
 
-    public Mapa(GraphicsContext gc){
+    public Mapa(GraphicsContext gc, double height, double width){
 
         this.gc = gc;
+        this.height = height;
+        this.width = width;
         this.numFilas = 0;
         this.numColumnas = 0;
         conjuntoTerrenos = new ArrayList<Integer>();
+    }
+
+    public void dibujarMapa(){
+        //Supongo canvas cuadrado
+        double lado = tamanioLado();
+        double posX, posY;
+        int i, j;
+        for(i=0, posY=0; i<numFilas; i++, posY+=lado){
+            for (j=0, posX=0; j<numColumnas; j++, posX+=lado){
+                for (Terreno t:
+                     listaTerrenos) {
+                    if(t.getNumero()==matrizmapa[i][j]){
+                        t.dibujarTerreno(gc, posX, posY, lado);
+                    }
+                }
+            }
+        }
+    }
+
+    private double tamanioLado(){
+        double lado;
+        if (numFilas>numColumnas){
+            lado = width/numFilas;
+        } else {
+            lado = height/numColumnas;
+        }
+        return lado;
     }
 
     public boolean leerArchivo(String fileName){
@@ -90,5 +121,27 @@ public class Mapa {
 
     public ArrayList<Integer> regresaTerrenos(){
         return conjuntoTerrenos;
+    }
+
+    public void setListaTerrenos(Terreno[] listaTerrenos) {
+        this.listaTerrenos = listaTerrenos;
+    }
+
+
+    //Esta es la lista que tiene los terrenos (nombre, imagen y numero)
+    public Terreno[] getListaTerrenos() {
+        return listaTerrenos;
+    }
+
+    public GraphicsContext getGc() {
+        return gc;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public double getWidth() {
+        return width;
     }
 }
