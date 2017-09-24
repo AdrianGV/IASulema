@@ -122,6 +122,7 @@ public class Main extends Application {
                 );
                 File selectedFile = fileChooser.showOpenDialog(stage);
                 if (selectedFile != null) {
+                    mapaTerreno = new Mapa(mapaTerreno.getGc(), mapaTerreno.getHeight(), mapaTerreno.getWidth());
                     if(mapaTerreno.leerArchivo(selectedFile.getPath())){
                         VentanaMapa vm = new VentanaMapa();
                         vm.abrirVentana(mapaTerreno);
